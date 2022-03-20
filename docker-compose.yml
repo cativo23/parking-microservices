@@ -1,0 +1,235 @@
+#Author: ccativo23 <cativo23.kt@gmail.com>
+version: '3'
+
+services:
+
+    # vehicles-manager services
+    vehicles-manager.app:
+        build:
+            context: ./vehicles-manager
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: vehicles-manager/app
+        restart: unless-stopped
+        tty: true
+        working_dir: /var/www/html
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        environment:
+            WWWUSER: '${WWWUSER}'
+        volumes:
+            - './vehicles-manager/:/var/www/html'
+        networks:
+            - vehicles-manager
+            - internal
+        depends_on:
+            - vehicles-manager.mysql
+            - redis
+
+    vehicles-manager.nginx:
+        image: nginx:alpine
+        restart: unless-stopped
+        # Dev Only
+        ports:
+            - '${VEHICLES_APP_PORT}:80'
+        tty: true
+        volumes:
+            - './vehicles-manager/:/var/www/html'
+            - './vehicles-manager/docker/nginx:/etc/nginx/conf.d'
+        networks:
+            - vehicles-manager
+            - gateway
+        depends_on:
+            - vehicles-manager.app
+
+    vehicles-manager.mysql:
+        image: 'mysql/mysql-server:8.0'
+        ports:
+            - '${VEHICLES_DB_PORT}:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: "%"
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        volumes:
+            - 'vehicles-manager-mysql:/var/lib/mysql'
+        networks:
+            - vehicles-manager
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+            retries: 3
+            timeout: 5s
+
+
+# registration-manager services
+    registration-manager.app:
+        build:
+            context: ./registration-manager
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: registration-manager/app
+        restart: unless-stopped
+        tty: true
+        working_dir: /var/www/html
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        environment:
+            WWWUSER: '${WWWUSER}'
+        volumes:
+            - './registration-manager/:/var/www/html'
+        networks:
+            - registration-manager
+            - internal
+        depends_on:
+            - registration-manager.mysql
+            - redis
+
+    registration-manager.nginx:
+        image: nginx:alpine
+        restart: unless-stopped
+        # Dev Only
+        ports:
+            - '${REGISTRATION_APP_PORT}:80'
+        tty: true
+        volumes:
+            - './registration-manager/:/var/www/html'
+            - './registration-manager/docker/nginx:/etc/nginx/conf.d'
+        networks:
+            - registration-manager
+            - gateway
+        depends_on:
+            - registration-manager.app
+
+    registration-manager.mysql:
+        image: 'mysql/mysql-server:8.0'
+        ports:
+            - '${REGISTRATION_DB_PORT}:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: "%"
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        volumes:
+            - 'registration-manager-mysql:/var/lib/mysql'
+        networks:
+            - registration-manager
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+            retries: 3
+            timeout: 5s
+
+
+# payments-manager services
+    payments-manager.app:
+        build:
+            context: ./payments-manager
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: payments-manager/app
+        restart: unless-stopped
+        tty: true
+        working_dir: /var/www/html
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        environment:
+            WWWUSER: '${WWWUSER}'
+        volumes:
+            - './payments-manager/:/var/www/html'
+        networks:
+            - payments-manager
+            - internal
+        depends_on:
+            - payments-manager.mysql
+            - redis
+
+    payments-manager.nginx:
+        image: nginx:alpine
+        restart: unless-stopped
+        # Dev Only
+        ports:
+            - '${PAYMENTS_APP_PORT}:80'
+        tty: true
+        volumes:
+            - './payments-manager/:/var/www/html'
+            - './payments-manager/docker/nginx:/etc/nginx/conf.d'
+        networks:
+            - payments-manager
+            - gateway
+        depends_on:
+            - payments-manager.app
+
+    payments-manager.mysql:
+        image: 'mysql/mysql-server:8.0'
+        ports:
+            - '${PAYMENTS_DB_PORT}:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: "%"
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        volumes:
+            - 'payments-manager-mysql:/var/lib/mysql'
+        networks:
+            - payments-manager
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+            retries: 3
+            timeout: 5s
+
+
+
+## Common Services
+    redis:
+        image: 'redis:alpine'
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        command: 'redis-server --requirepass ${REDIS_PASSWORD}'
+        volumes:
+            - 'redis-data:/data'
+        networks:
+            - internal
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            retries: 3
+            timeout: 5s
+
+    mailhog:
+        image: 'mailhog/mailhog:latest'
+        ports:
+            - '${FORWARD_MAILHOG_PORT:-1025}:1025'
+            - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'
+        networks:
+            - vehicles-manager
+
+networks:
+    vehicles-manager:
+        driver: bridge
+    registration-manager:
+        driver: bridge
+    payments-manager:
+        driver: bridge
+    gateway:
+        driver: bridge
+    internal:
+        driver: bridge
+    #proxy:
+    #    external: true
+
+volumes:
+    vehicles-manager-mysql:
+        driver: local
+    registration-manager-mysql:
+        driver: local
+    payments-manager-mysql:
+        driver: local
+    redis-data:
+        driver: local
