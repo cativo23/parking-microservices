@@ -45,7 +45,7 @@ abstract class CrudBaseController extends BaseAPIController
     /**
      * Display the specified resource.
      */
-    abstract public function show(int $id);
+    abstract public function show(string|int $id);
 
     /**
      * Remove the specified resource from storage.

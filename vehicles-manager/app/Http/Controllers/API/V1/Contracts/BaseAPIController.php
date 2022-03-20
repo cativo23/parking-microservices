@@ -81,7 +81,10 @@ abstract class BaseAPIController extends Controller
     /**
      * Generate a Response with a 404 HTTP header and a given message.
      */
-    protected function errorNotFound(string $message = 'Resource Not Found', string $description = null): JsonResponse
+    protected function errorNotFound(
+        string $message = 'Resource Not Found',
+        string $description = 'Not found'
+    ): JsonResponse
     {
         return $this->setStatusCode(Response::HTTP_NOT_FOUND)->respondWithError($message, [], $description);
     }

@@ -41,9 +41,9 @@ class VehicleController extends CrudBaseController
     /**
      * Display the specified resource.
      */
-    public function show(int $id): JsonResponse
+    public function show(string|int $id): JsonResponse
     {
-        $vehicle = $this->repository->getById($id);
+        $vehicle = $this->repository->getByLicensePlate($id);
 
         if ($vehicle) {
             return $this->setStatusCode(Response::HTTP_FOUND)->success(

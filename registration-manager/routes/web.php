@@ -18,5 +18,3 @@ Route::get('/', function () {
         'Registration Manager' => 'v1'
     ];
 });
-
-require __DIR__.'/auth.php';
