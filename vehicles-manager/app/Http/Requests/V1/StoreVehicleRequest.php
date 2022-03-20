@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\V1;
 
+use App\Enums\VehicleTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Spatie\Enum\Laravel\Rules\EnumRule;
 
 class StoreVehicleRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class StoreVehicleRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,8 @@ class StoreVehicleRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'license_plate' => ['required', 'string'],
+            'type' => ['required', new EnumRule(VehicleTypeEnum::class)],
         ];
     }
 }
