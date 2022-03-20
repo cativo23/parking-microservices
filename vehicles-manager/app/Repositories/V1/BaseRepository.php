@@ -12,7 +12,7 @@ abstract class BaseRepository implements RepositoryInterface
     /**
      * @var class-string<Model>
      */
-    private string $model;
+    protected string $model;
 
     protected array $allowedFilters = [];
 

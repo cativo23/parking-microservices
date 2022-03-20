@@ -26,7 +26,7 @@ class StoreVehicleRequest extends FormRequest
     public function rules()
     {
         return [
-            'license_plate' => ['required', 'string', 'unique:vehicles,license_plate'],
+            'license_plate' => ['required', 'string'],
             'type' => ['required', new EnumRule(VehicleTypeEnum::class)],
         ];
     }

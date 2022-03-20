@@ -7,7 +7,6 @@ use App\Http\Requests\V1\StoreVehicleRequest;
 use App\Http\Requests\V1\UpdateVehicleRequest;
 use App\Http\Resources\V1\VehicleResource;
 use App\Models\V1\Vehicle;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,6 +18,21 @@ class VehicleController extends CrudBaseController
     public function store(StoreVehicleRequest $request): JsonResponse
     {
         $data = $request->validated();
+
+        $vehicle = $this->repository->getByLicensePlate($data['license_plate']);
+
+        if ($vehicle) {
+            $updated = $this->repository->update($vehicle, $data);
+
+            if ($updated) {
+                return $this->successAccepted(
+                    'Vehicle Registered as ' . $data['type'],
+                    (new $this->resource($vehicle))->resolve()
+                );
+            }
+            return $this->errorInternalError();
+        }
+
         $vehicle = $this->repository->create($data);
 
         return $this->successCreatedWithResource(new $this->resource($vehicle), 'Vehicle Created Successfully');
@@ -51,7 +65,7 @@ class VehicleController extends CrudBaseController
         if ($result) {
             return $this->successAccepted(
                 'Vehicle Updated Successfully',
-                (new $this->resource($model))->resolve()
+                (new $this->resource($vehicle))->resolve()
             );
         }
 
