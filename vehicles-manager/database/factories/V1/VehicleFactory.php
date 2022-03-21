@@ -2,10 +2,13 @@
 
 namespace Database\Factories\V1;
 
+use App\Enums\VehicleTypeEnum;
+use App\Models\V1\Vehicle;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Spatie\Enum\Laravel\Faker\FakerEnumProvider;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\V1\Vehicle>
+ * @extends Factory<Vehicle>
  */
 class VehicleFactory extends Factory
 {
@@ -16,8 +19,10 @@ class VehicleFactory extends Factory
      */
     public function definition()
     {
+        $this->faker->addProvider(new FakerEnumProvider($this->faker));
         return [
-            //
+            'license_plate' => $this->faker->unique()->bothify('???#######'),
+            'type' => $this->faker->randomEnum(VehicleTypeEnum::class),
         ];
     }
 }

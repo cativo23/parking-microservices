@@ -31,4 +31,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'vehicle_manager' => [
+        'url' => env('VEHICLE_URL'),
+        'token' => env('VEHICLE_ACCESS_TOKEN', '')
+    ],
+
+    'payments_manager' => [
+        'url' => env('PAYMENTS_URL'),
+        'token' => env('PAYMENTS_ACCESS_TOKEN', '')
+    ]
 ];

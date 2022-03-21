@@ -18,5 +18,3 @@ Route::get('/', function () {
         'Payments Manager' => 'v1'
     ];
 });
-
-require __DIR__.'/auth.php';
