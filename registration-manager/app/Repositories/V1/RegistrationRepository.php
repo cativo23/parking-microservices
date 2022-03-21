@@ -3,6 +3,7 @@
 namespace App\Repositories\V1;
 
 use App\Models\V1\Registration;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 
@@ -29,5 +30,10 @@ class RegistrationRepository extends BaseRepository
     public function getLastByLicensePlate(string $id): ?Model
     {
         return $this->model::where('license_plate', $id)->latest()->first();
+    }
+
+    public function getByLicensePlates(array $ids): Collection
+    {
+        return $this->model::whereIn('license_plate', $ids)->get();
     }
 }

@@ -21,6 +21,7 @@ use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Storage\LaravelCacheStorage;
 use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
 use phpDocumentor\Reflection\Types\ClassString;
+use RuntimeException;
 
 abstract class BaseAPI implements ApiInterface
 {
@@ -54,10 +55,14 @@ abstract class BaseAPI implements ApiInterface
      * @throws RequestError
      * @throws StatusNotExpected
      */
-    public function makeRequest(string $uri, array $query = []): PromiseInterface|Response|null
+    public function makeRequest(string $uri, array $query = [], string $method = 'get'): PromiseInterface|Response|null
     {
         try {
-            $response = $this->http->get($uri, $query);
+            $response = match ($method) {
+                'get' => $this->http->get($uri, $query),
+                'post' => $this->http->post($uri, $query),
+                default => throw new RuntimeException,
+            };
         } catch (Exception $exception) {
             throw new RequestError('Something went wrong in request', previous: $exception);
         }

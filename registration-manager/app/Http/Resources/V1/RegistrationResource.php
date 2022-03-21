@@ -18,8 +18,8 @@ class RegistrationResource extends JsonResource
         return [
             'id' => $this->id,
             'license_plate' => $this->license_plate,
-            'enter_date' => $this->enter_date,
-            'exit_date' => $this->exit_date,
+            'enter_date' => $this->enter_date->format('Y-m-d H:i:s'),
+            'exit_date' => $this->exit_date?->format('Y-m-d H:i:s'),
             'total_time' => $this->total_time,
         ];
     }

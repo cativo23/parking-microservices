@@ -31,4 +31,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'vehicle_manager' => [
+        'url' => env('VEHICLE_URL'),
+        'token' => env('VEHICLE_ACCESS_TOKEN', '')
+    ],
+
+    'registrations_manager' => [
+        'url' => env('REGISTRATIONS_URL'),
+        'token' => env('REGISTRATIONS_ACCESS_TOKEN', '')
+    ]
 ];

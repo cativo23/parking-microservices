@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\APIs\Payments;
 use App\APIs\Vehicles;
 use App\Exceptions\APIs\RequestError;
 use App\Http\Controllers\API\V1\Contracts\CrudBaseController;
@@ -10,6 +11,8 @@ use App\Http\Resources\V1\RegistrationResource;
 use App\Models\V1\Registration;
 use Illuminate\Http\JsonResponse;
 use Date;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use RuntimeException;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Symfony\Component\HttpFoundation\Response;
@@ -59,7 +62,7 @@ class RegistrationController extends CrudBaseController
      */
     public function update(string $id): JsonResponse
     {
-        $payment = 0.00;
+        $payment = null;
 
         /* @var Registration $registration */
         $registration = $this->repository->getLastByLicensePlate($id);
@@ -68,7 +71,7 @@ class RegistrationController extends CrudBaseController
             return $this->errorWrongData('Vehicle Is not in Parking Lot');
         }
 
-        $result = $this->repository->update($registration, ['exit_date'=>Date::now()]);
+        $result = $this->repository->update($registration, ['exit_date'=>Date::now()->addMinutes(100)]);
 
         try {
             $vehicle = (new Vehicles())->getVehicleByLicencePlate($registration->license_plate);
@@ -77,8 +80,35 @@ class RegistrationController extends CrudBaseController
         }
 
         if (!$vehicle) {
-            $payment = round($registration->refresh()->total_time * 0.05, 2);
-            //TODO: SEND PAYMENT TO SERVICE
+            $totalPayment = round($registration->refresh()->total_time * 50, 2);
+
+            try {
+                $payment = (new Payments())->savePayment(
+                    $registration->license_plate,
+                    $totalPayment
+                );
+            } catch (RequestError|UnknownProperties $e) {
+                return $this->errorInternalError($e->getMessage());
+            }
+        } else {
+            switch ($vehicle->type) {
+                case 'resident':
+                    $totalPayment = round($registration->refresh()->total_time * 5, 2);
+                    try {
+                        $payment = (new Payments())->savePayment(
+                            $registration->license_plate,
+                            $totalPayment,
+                            $vehicle->type,
+                            false
+                        );
+                    } catch (RequestError|UnknownProperties $e) {
+                        return $this->errorInternalError($e->getMessage());
+                    }
+                    break;
+                case 'official':
+                default:
+                    break;
+            }
         }
 
         if ($result) {
@@ -100,5 +130,23 @@ class RegistrationController extends CrudBaseController
     {
         //TODO: Implement soft deletes
         throw new RuntimeException();
+    }
+
+    public function getResidentRegistrations(Request $request): AnonymousResourceCollection|JsonResponse
+    {
+        try {
+            $vehicles = (new Vehicles())->getVehicleByType($request->input('type', 'resident'));
+
+            $licensePlates = $vehicles?->pluck('license_plate');
+
+            $registrations = $this->repository->getByLicensePlates($licensePlates->toArray());
+        } catch (RequestError $e) {
+            return $this->errorInternalError($e->getMessage());
+        }
+
+        /* @var AnonymousResourceCollection $result*/
+        $result = $this->resource::collection($registrations);
+
+        return $this->respondWithSuccess('Registrations returned correctly!', $result->resolve());
     }
 }

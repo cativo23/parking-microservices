@@ -52,6 +52,6 @@ class Registration extends Model
      */
     public function getTotalTimeAttribute(): float
     {
-        return $this->exit_date ? $this->exit_date->diffInMinutes($this->enter_date) : 0;
+        return $this->exit_date ? $this->enter_date->diffInMinutes($this->exit_date) : 0;
     }
 }
