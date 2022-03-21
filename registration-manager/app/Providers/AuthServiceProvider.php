@@ -16,6 +16,18 @@ class AuthServiceProvider extends ServiceProvider
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
     ];
 
+    public function register()
+    {
+        parent::register();
+        $this->app['auth']->provider(
+            'auth-provider',
+            function ($app, array $config) {
+                return new CustomUserServiceProvider();
+            }
+        );
+    }
+
+
     /**
      * Register any authentication / authorization services.
      *
