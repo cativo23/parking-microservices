@@ -57,6 +57,7 @@ abstract class BaseAPI implements ApiInterface
     public function makeRequest(string $uri, array $query = []): PromiseInterface|Response|null
     {
         try {
+            $query['token'] = $this->token;
             $response = $this->http->get($uri, $query);
         } catch (Exception $exception) {
             throw new RequestError('Something went wrong in request', previous: $exception);
