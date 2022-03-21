@@ -46,6 +46,7 @@ services:
         labels:
             - "traefik.enable=true"
             - "traefik.http.middlewares.vehicles.addprefix.prefix=/api/v1/vehicles"
+            - "traefik.http.routers.vehicles.middlewares=vehicles"
             - "traefik.http.routers.vehicles.rule=Host(`api.${DOMAIN}`) && Path(`/vehicles`)"
             - "traefik.http.routers.vehicles.entrypoints=websecure"
             - "traefik.http.routers.vehicles.service=vehicles"
