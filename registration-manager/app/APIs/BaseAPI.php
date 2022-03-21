@@ -58,6 +58,7 @@ abstract class BaseAPI implements ApiInterface
     public function makeRequest(string $uri, array $query = [], string $method = 'get'): PromiseInterface|Response|null
     {
         try {
+            $query['token'] = $this->token;
             $response = match ($method) {
                 'get' => $this->http->get($uri, $query),
                 'post' => $this->http->post($uri, $query),
