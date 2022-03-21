@@ -23,6 +23,8 @@ services:
         networks:
             - vehicles-manager
             - internal
+        labels:
+            - "traefik.enable=false"
         depends_on:
             - vehicles-manager.mysql
             - redis
@@ -40,6 +42,17 @@ services:
         networks:
             - vehicles-manager
             - gateway
+            - web
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.vehicles.rule=Host(`api.${DOMAIN}`) & Path(`/vehicles`)"
+            - "traefik.http.middlewares.vehicles.addprefix.prefix=/api/v1/vehicles"
+            - "traefik.http.routers.vehicles.entrypoints=websecure"
+            - "traefik.http.routers.vehicles.service=vehicles"
+            - "traefik.http.services.vehicles.loadbalancer.server.port=80"
+            - "traefik.http.routers.vehicles.tls.certresolver=lets-encrypt"
+            - "traefik.http.routers.vehicles.tls=true"
+            - "traefik.docker.network=web"
         depends_on:
             - vehicles-manager.app
 
@@ -58,6 +71,8 @@ services:
             - 'vehicles-manager-mysql:/var/lib/mysql'
         networks:
             - vehicles-manager
+        labels:
+            - "traefik.enable=false"
         healthcheck:
             test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
             retries: 3
@@ -84,6 +99,8 @@ services:
         networks:
             - registration-manager
             - internal
+        labels:
+            - "traefik.enable=false"
         depends_on:
             - registration-manager.mysql
             - redis
@@ -101,6 +118,17 @@ services:
         networks:
             - registration-manager
             - gateway
+            - web
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.registration.rule=Host(`api.${DOMAIN}`) & Path(`/registration`)"
+            - "traefik.http.middlewares.registration.addprefix.prefix=/api/v1/registration"
+            - "traefik.http.routers.registration.entrypoints=websecure"
+            - "traefik.http.routers.registration.service=registration"
+            - "traefik.http.services.registration.loadbalancer.server.port=80"
+            - "traefik.http.routers.registration.tls.certresolver=lets-encrypt"
+            - "traefik.http.routers.registration.tls=true"
+            - "traefik.docker.network=web"
         depends_on:
             - registration-manager.app
 
@@ -119,6 +147,8 @@ services:
             - 'registration-manager-mysql:/var/lib/mysql'
         networks:
             - registration-manager
+        labels:
+            - "traefik.enable=false"
         healthcheck:
             test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
             retries: 3
@@ -145,6 +175,8 @@ services:
         networks:
             - payments-manager
             - internal
+        labels:
+            - "traefik.enable=false"
         depends_on:
             - payments-manager.mysql
             - redis
@@ -162,6 +194,17 @@ services:
         networks:
             - payments-manager
             - gateway
+            - web
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.payments.rule=Host(`api.${DOMAIN}`) & Path(`/payments`)"
+            - "traefik.http.middlewares.payments.addprefix.prefix=/api/v1/payments"
+            - "traefik.http.routers.payments.entrypoints=websecure"
+            - "traefik.http.routers.payments.service=payments"
+            - "traefik.http.services.payments.loadbalancer.server.port=80"
+            - "traefik.http.routers.payments.tls.certresolver=lets-encrypt"
+            - "traefik.http.routers.payments.tls=true"
+            - "traefik.docker.network=web"
         depends_on:
             - payments-manager.app
 
@@ -180,6 +223,8 @@ services:
             - 'payments-manager-mysql:/var/lib/mysql'
         networks:
             - payments-manager
+        labels:
+            - "traefik.enable=false"
         healthcheck:
             test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
             retries: 3
@@ -201,6 +246,8 @@ services:
             test: ["CMD", "redis-cli", "ping"]
             retries: 3
             timeout: 5s
+        labels:
+            - "traefik.enable=false"
 
     mailhog:
         image: 'mailhog/mailhog:latest'
@@ -221,8 +268,8 @@ networks:
         driver: bridge
     internal:
         driver: bridge
-    #proxy:
-    #    external: true
+    web:
+        external: true
 
 volumes:
     vehicles-manager-mysql:
