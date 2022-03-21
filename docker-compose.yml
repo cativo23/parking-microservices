@@ -45,8 +45,8 @@ services:
             - web
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.vehicles.rule=Host(`api.${DOMAIN}`) && Path(`/vehicles`)"
             - "traefik.http.middlewares.vehicles.addprefix.prefix=/api/v1/vehicles"
+            - "traefik.http.routers.vehicles.rule=Host(`api.${DOMAIN}`) && Path(`/vehicles`)"
             - "traefik.http.routers.vehicles.entrypoints=websecure"
             - "traefik.http.routers.vehicles.service=vehicles"
             - "traefik.http.services.vehicles.loadbalancer.server.port=80"
