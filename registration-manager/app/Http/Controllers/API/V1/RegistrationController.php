@@ -71,7 +71,7 @@ class RegistrationController extends CrudBaseController
             return $this->errorWrongData('Vehicle Is not in Parking Lot');
         }
 
-        $result = $this->repository->update($registration, ['exit_date'=>Date::now()->addMinutes(100)]);
+        $result = $this->repository->update($registration, ['exit_date'=>Date::now()]);
 
         try {
             $vehicle = (new Vehicles())->getVehicleByLicencePlate($registration->license_plate);
