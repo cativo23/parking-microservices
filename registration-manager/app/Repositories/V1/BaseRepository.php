@@ -52,14 +52,9 @@ abstract class BaseRepository implements RepositoryInterface
         return $this->model::find($id);
     }
 
-    public function delete(int $id): bool
+    public function delete(Model $object): bool
     {
-        $object = $this->getById($id);
-        if ($object) {
-            return $object->delete();
-        }
-
-        return false;
+        return $object->delete();
     }
 
     public function create(array $data): Model

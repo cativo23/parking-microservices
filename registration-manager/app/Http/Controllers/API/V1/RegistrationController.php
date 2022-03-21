@@ -128,8 +128,39 @@ class RegistrationController extends CrudBaseController
 
     public function destroy(int $id): JsonResponse
     {
-        //TODO: Implement soft deletes
-        throw new RuntimeException();
+        $registration = $this->repository->getById($id);
+
+        if ($registration) {
+            $result = $this->repository->delete($registration);
+
+            if ($result) {
+                return $this->setStatusCode(Response::HTTP_OK)->success(
+                    'Registration deleted',
+                    data: (new $this->resource($registration))->resolve()
+                );
+            }
+        }
+
+        return $this->errorNotFound('Registration Not Found');
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        /* @var Registration $registration */
+        $registration = $this->repository->getByIdTrashed($id);
+
+        if ($registration) {
+            $result = $this->repository->restore($registration);
+
+            if ($result) {
+                return $this->setStatusCode(Response::HTTP_OK)->success(
+                    'Registration Restored',
+                    data: (new $this->resource($registration))->resolve()
+                );
+            }
+        }
+
+        return $this->errorNotFound('Registration Not Found');
     }
 
     public function getResidentRegistrations(Request $request): AnonymousResourceCollection|JsonResponse
@@ -148,5 +179,27 @@ class RegistrationController extends CrudBaseController
         $result = $this->resource::collection($registrations);
 
         return $this->respondWithSuccess('Registrations returned correctly!', $result->resolve());
+    }
+
+    /**
+     * @throws RequestError
+     */
+    public function monthStart(): JsonResponse
+    {
+        $residentVehicles = (new Vehicles())->getVehicleByType('resident');
+        $officialVehicles = (new Vehicles())->getVehicleByType('official');
+
+        $result = $this->repository->deleteAll($residentVehicles?->pluck('license_plate')->toArray());
+
+        $result2 = $this->repository->forceDeleteAll($officialVehicles?->pluck('license_plate')->toArray());
+
+        if ($result) {
+            return $this->setStatusCode(Response::HTTP_OK)->success(
+                'Month Started successfully!',
+            );
+        }
+
+
+        return $this->errorNotFound('Registration Not Found');
     }
 }

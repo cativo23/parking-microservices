@@ -36,4 +36,24 @@ class RegistrationRepository extends BaseRepository
     {
         return $this->model::whereIn('license_plate', $ids)->get();
     }
+
+    public function getByIdTrashed(int $id): ?Model
+    {
+        return  $this->model::withTrashed()->find($id);
+    }
+
+    public function restore(Registration $registration): ?bool
+    {
+        return $registration->restore();
+    }
+
+    public function deleteAll(array $licensePlates): bool|int|null
+    {
+        return $this->model::whereIn('license_plate', $licensePlates)->delete();
+    }
+
+    public function forceDeleteAll(array $licensePlates): bool|int|null
+    {
+        return $this->model::whereIn('license_plate', $licensePlates)->forceDelete();
+    }
 }
