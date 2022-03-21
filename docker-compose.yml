@@ -266,7 +266,7 @@ networks:
     internal:
         driver: bridge
     web:
-        #external: true
+        external: true
 
 volumes:
     vehicles-manager-mysql:
