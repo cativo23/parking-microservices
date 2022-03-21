@@ -11,7 +11,7 @@ interface RepositoryInterface
 
     public function getById(int $id): ?Model;
 
-    public function delete(int $id): bool;
+    public function delete(Model $object): bool;
 
     public function create(array $data): Model;
 

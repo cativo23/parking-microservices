@@ -8,6 +8,7 @@ use App\Http\Requests\V1\UpdateVehicleRequest;
 use App\Http\Resources\V1\VehicleResource;
 use App\Models\V1\Vehicle;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
 
 class VehicleController extends CrudBaseController
@@ -61,15 +62,20 @@ class VehicleController extends CrudBaseController
     {
         $data = $request->validated();
         $vehicle = $this->repository->getById($id);
-        $result = $this->repository->update($vehicle, $data);
-        if ($result) {
-            return $this->successAccepted(
-                'Vehicle Updated Successfully',
-                (new $this->resource($vehicle))->resolve()
-            );
+
+        if ($vehicle) {
+            $result = $this->repository->update($vehicle, $data);
+            if ($result) {
+                return $this->successAccepted(
+                    'Vehicle Updated Successfully',
+                    (new $this->resource($vehicle))->resolve()
+                );
+            }
+
+            return $this->errorInternalError();
         }
 
-        return $this->errorInternalError();
+        return $this->errorNotFound('Vehicle Not Found');
     }
 
     /**
@@ -80,6 +86,12 @@ class VehicleController extends CrudBaseController
         $this->repository->delete($id);
 
         return $this->success('Vehicle Deleted Successfully');
+    }
+
+    public function getAllByType(): AnonymousResourceCollection
+    {
+        $result = $this->repository->index()->get();
+        return $this->resource::collection($result);
     }
 
     protected function model(): string
