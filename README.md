@@ -1,39 +1,53 @@
-# cativo23/parking-microservices
+<div align="center">
+ <img  width="600" height="350" src="https://banners.beyondco.de/Parking%20Microservices.png?theme=dark&packageManager=&packageName=&pattern=formalInvitation&style=style_1&description=Parking+Lot+Management+Using+Microservices&md=1&showWatermark=0&fontSize=100px&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg" alt="Parking">
+</div>
+
+# Parking Microservices
 
 Parking Management System Using Microservices Architecture
 
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/built-with-swag.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)
 
 ## Local Development
 
 This project uses
-[Laravel Sail](https://laravel.com/docs/sail) to manage
+[Docker](https://docker.com) with [Docker Compose](https://docs.docker.com/compose/) to manage
 its local development stack. For more detailed usage instructions take a look at
-the [official documentation](https://laravel.com/docs/sail).
+the [official documentation](https://docs.docker.com/compose/).
 
-### Links
+## Links
 
-- **Your Application** http://localhost
-- **Preview Emails via Mailhog** http://localhost:8025
-- **Laravel Telescope** http://localhost/telescope
+- **Auth Service** <https://auth.voyarge.ml>
+- **Vehicles Service** <https://vehicles.voyarge.ml>
+- **Registrations Service** <https://registrations.voyarge.ml>
+- **Payments Management Service** <https://payments.voyarge.ml>
 
-### Start the development server
+## Important
+Each folder contains a Laravel Project, each of them must have its own .env files.
 
-```shell
-./vendor/bin/sail up
-```
+For testing just change the .env.example of each folder to .env
 
-You can also use the `-d` option, to start the server in
-the background if you do not care about the logs or still want to use your
-terminal for other things.
+## Start the development servers
 
-### Build frontend assets
+First we create a docker network called web
 
 ```shell
-./vendor/bin/sail npm watch
+docker network create proxy 
 ```
-
-### Run Tests
+Change de .env.example files to .env
 
 ```shell
-./vendor/bin/sail test
+cp .env.example .env 
 ```
+
+After you can start de containers
+
+```shell
+docker-compose up -d
+```
+
+## Contact
+If you found any problems, please contact me:
+<a href="mailto:cativo23.kt@gmail.com">cativo23.kt@gmail.com</a>
