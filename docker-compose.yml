@@ -42,7 +42,7 @@ services:
         networks:
             - vehicles-manager
             - gateway
-            #- web
+            - web
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.vehicles.rule=Host(`vehicles.${DOMAIN}`)"
@@ -117,7 +117,7 @@ services:
         networks:
             - registration-manager
             - gateway
-           # - web
+            - web
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.registration.rule=Host(`registrations.${DOMAIN}`)"
@@ -192,7 +192,7 @@ services:
         networks:
             - payments-manager
             - gateway
-            #- web
+            - web
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.payments.rule=Host(`payments.${DOMAIN}`)"
@@ -265,7 +265,7 @@ networks:
         driver: bridge
     internal:
         driver: bridge
-    #web:
+    web:
         #external: true
 
 volumes:
