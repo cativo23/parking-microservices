@@ -122,8 +122,9 @@ services:
             - web
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.registration.rule=Host(`api.${DOMAIN}`) && Path(`/registrations`)"
-            - "traefik.http.middlewares.registration.addprefix.prefix=/api/v1/registrations"
+            - "traefik.http.routers.registration.rule=Host(`api.${DOMAIN}`) && Path(`/api/v1/registrations`)"
+            - "traefik.http.middlewares.registration.replacepath.path=/api/v1/registrations"
+            - "traefik.http.routers.registration.middlewares=registration"
             - "traefik.http.routers.registration.entrypoints=websecure"
             - "traefik.http.routers.registration.service=registration"
             - "traefik.http.services.registration.loadbalancer.server.port=80"
@@ -198,8 +199,9 @@ services:
             - web
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.payments.rule=Host(`api.${DOMAIN}`) && Path(`/payments`)"
-            - "traefik.http.middlewares.payments.addprefix.prefix=/api/v1/payments"
+            - "traefik.http.routers.payments.rule=Host(`api.${DOMAIN}`) && Path(`/api/v1/payments`)"
+            - "traefik.http.middlewares.payments.replacepath.path=/api/v1/payments"
+            - "traefik.http.routers.payments.middlewares=payments"
             - "traefik.http.routers.payments.entrypoints=websecure"
             - "traefik.http.routers.payments.service=payments"
             - "traefik.http.services.payments.loadbalancer.server.port=80"
