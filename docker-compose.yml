@@ -45,7 +45,7 @@ services:
             - web
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.vehicles.rule=Host(`api.${DOMAIN}`) & Path(`/vehicles`)"
+            - "traefik.http.routers.vehicles.rule=Host(`api.${DOMAIN}`) && Path(`/vehicles`)"
             - "traefik.http.middlewares.vehicles.addprefix.prefix=/api/v1/vehicles"
             - "traefik.http.routers.vehicles.entrypoints=websecure"
             - "traefik.http.routers.vehicles.service=vehicles"
@@ -121,7 +121,7 @@ services:
             - web
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.registration.rule=Host(`api.${DOMAIN}`) & Path(`/registrations`)"
+            - "traefik.http.routers.registration.rule=Host(`api.${DOMAIN}`) && Path(`/registrations`)"
             - "traefik.http.middlewares.registration.addprefix.prefix=/api/v1/registrations"
             - "traefik.http.routers.registration.entrypoints=websecure"
             - "traefik.http.routers.registration.service=registration"
@@ -197,7 +197,7 @@ services:
             - web
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.payments.rule=Host(`api.${DOMAIN}`) & Path(`/payments`)"
+            - "traefik.http.routers.payments.rule=Host(`api.${DOMAIN}`) && Path(`/payments`)"
             - "traefik.http.middlewares.payments.addprefix.prefix=/api/v1/payments"
             - "traefik.http.routers.payments.entrypoints=websecure"
             - "traefik.http.routers.payments.service=payments"
