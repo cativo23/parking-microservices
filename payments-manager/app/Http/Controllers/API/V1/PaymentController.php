@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\APIs\Registrations;
-use App\Data\RegistrationDTO;
-use App\Exceptions\APIs\RequestError;
 use App\Http\Controllers\API\V1\Contracts\CrudBaseController;
 use App\Http\Requests\V1\PaymentRequest;
 use App\Http\Resources\V1\PaymentResource;
@@ -84,10 +81,7 @@ class PaymentController extends CrudBaseController
         throw new RuntimeException();
     }
 
-    /**
-     * @throws RequestError
-     */
-    public function getPaymentReport(Request $request)
+    public function getPaymentReport(Request $request): \Illuminate\Http\Response
     {
         $notPaid = $this->repository->getNotPaid($request->input('type', 'resident'));
 
