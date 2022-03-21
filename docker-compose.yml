@@ -121,8 +121,8 @@ services:
             - web
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.registration.rule=Host(`api.${DOMAIN}`) & Path(`/registration`)"
-            - "traefik.http.middlewares.registration.addprefix.prefix=/api/v1/registration"
+            - "traefik.http.routers.registration.rule=Host(`api.${DOMAIN}`) & Path(`/registrations`)"
+            - "traefik.http.middlewares.registration.addprefix.prefix=/api/v1/registrations"
             - "traefik.http.routers.registration.entrypoints=websecure"
             - "traefik.http.routers.registration.service=registration"
             - "traefik.http.services.registration.loadbalancer.server.port=80"
